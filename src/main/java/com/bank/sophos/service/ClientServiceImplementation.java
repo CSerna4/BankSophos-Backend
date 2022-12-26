@@ -22,11 +22,13 @@ public class ClientServiceImplementation implements ClientService {
 	public Clients createClient(Clients client) {
 
 		if (legalAgeCheck(client.getbirthDate())) {
+			
+			client.setcreationDate(LocalDate.now());
 
 			Clients newClient = clientRepository.save(client);
 
 			return newClient;
-			
+
 		} else {
 
 			throw new IllegalArgumentException("You can not create a client if it has less than 18 years old.");
@@ -44,18 +46,25 @@ public class ClientServiceImplementation implements ClientService {
 	}
 
 	@Override
-	public boolean deleteClientbyId(Long id) {
+	public boolean deleteClientbyId(Long id){
+		
+		clientRepository.deleteById(id);
+		
 		return true;
 	}
 
 	@Override
 	public Clients modifyClient(Clients client) {
 
-		Optional<Clients> modifId = clientRepository.findById(client.getClientID());
-		if (modifId.isPresent()) {
-
+		Optional<Clients> checkID = clientRepository.findById(client.getClientID());
+		if (checkID.isPresent()) {
+			
+			client.setModifUser("Admin");
+						
 			Clients updatedClient = clientRepository.save(client);
+			
 			return updatedClient;
+
 		} else {
 
 			throw new ResourceNotFoundException("The ID is not in the system. Please verify.");

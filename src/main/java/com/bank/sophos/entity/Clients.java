@@ -30,7 +30,7 @@ public class Clients {
 		this.lastName = lastName;
 		this.email = email;
 		this.creationUser = creationUser;
-		this.modifUser = modifUser;
+		this.modifUser = "Admin";
 		this.birthDate = birthDate;
 		this.creationDate = creationDate;
 		this.modifDate = modifDate;

@@ -1,5 +1,6 @@
 package com.bank.sophos.controller;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,19 +16,20 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.*;
 
 import com.bank.sophos.entity.Clients;
 import com.bank.sophos.service.ClientService;
 
 @RestController
 @RequestMapping ("/clients")
-@CrossOrigin (origins="http://localhost:4200/")
+@CrossOrigin (origins="http://localhost:4200")
 public class ClientController {
 	
 	@Autowired
 	ClientService clientService;
 	
+	@CrossOrigin (origins="http://localhost:4200")
 	@GetMapping
 	public ResponseEntity<List<Clients>> getClients(){
 		
@@ -35,26 +37,24 @@ public class ClientController {
 	}
 	
 	@GetMapping ("/{id}")
-	public ResponseEntity<Clients> getClientById(@PathVariable ("id") Long id){
+	public ResponseEntity<Clients> getClientById(@PathVariable Long id){
 		
 		return clientService.getClientById(id)
 				.map(client -> new ResponseEntity<>(client, HttpStatus.OK))
 				.orElse(new ResponseEntity <>(HttpStatus.NOT_FOUND));		
 	}
 	
-	@PostMapping("/")
+	
+	@PostMapping
 	@ResponseBody
+	@CrossOrigin (origins="http://localhost:4200")
 	public ResponseEntity<Clients> createClient(@RequestBody Clients client){
 		
-		if(clientService.createClient(client) != null){
-			
-			return new ResponseEntity<>(clientService.createClient(client),HttpStatus.CREATED);		
-		}else {
-			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-		}
+		Clients newClient = clientService.createClient(client);
 		
-					
+		return new ResponseEntity<>(newClient, HttpStatus.OK);
 	}
+	
 	
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Clients> deleteClientById(@PathVariable("id") Long id) {
@@ -68,13 +68,8 @@ public class ClientController {
 
 	}
 	
-	@PutMapping
-	public ResponseEntity<Clients> updateClient (@PathVariable ("id")@RequestBody Clients client){
-		
-		if(client.getClientID() != null) {
-			
-			throw new IllegalArgumentException("Please, do not change the ID number. It is automatically created by the system");
-		}
+	@PutMapping("/{id}")
+	public ResponseEntity<Clients> updateClient (@PathVariable Long id, @RequestBody Clients client){
 		
 		Clients updatedClient = clientService.modifyClient(client);
 		
